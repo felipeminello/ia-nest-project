@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { ProductsServiceController } from './products-service.controller';
-import { ProductsServiceService } from './products-service.service';
-import { ProductsFacade } from './products.facade';
+import { ProductsServiceController } from '@app/products-service.controller';
+import { ProductsServiceService } from '@app/products-service.service';
+import { ProductsFacade } from '@app/products.facade';
 
 @Module({
   imports: [],
