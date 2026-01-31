@@ -5,6 +5,7 @@
   "compilerOptions": {
     "deleteOutDir": true,
     "webpack": true,
+    "webpackConfigPath": "webpack.config.js",
     "tsConfigPath": "apps/nest-modular-monolith/tsconfig.app.json"
   },
   "monorepo": true,
@@ -29,18 +30,18 @@
       }
     },
     "products-service": {
-      "type": "application",
+      "type": "library",
       "root": "apps/products-service",
-      "entryFile": "main",
+      "entryFile": "index",
       "sourceRoot": "apps/products-service/src",
       "compilerOptions": {
         "tsConfigPath": "apps/products-service/tsconfig.app.json"
       }
     },
     "users-service": {
-      "type": "application",
+      "type": "library",
       "root": "apps/users-service",
-      "entryFile": "main",
+      "entryFile": "index",
       "sourceRoot": "apps/users-service/src",
       "compilerOptions": {
         "tsConfigPath": "apps/users-service/tsconfig.app.json"

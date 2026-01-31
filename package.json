@@ -48,6 +48,7 @@
     "ts-loader": "^9.5.4",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
+    "tsconfig-paths-webpack-plugin": "^4.2.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.54.0"
   },
@@ -72,7 +73,9 @@
       "<rootDir>/libs/"
     ],
     "moduleNameMapper": {
-      "^@app/common(|/.*)$": "<rootDir>/libs/common/src/$1"
+      "^@app/common(|/.*)$": "<rootDir>/libs/common/src/$1",
+      "^@app/products-service(|/.*)$": "<rootDir>/apps/products-service/src/$1",
+      "^@app/users-service(|/.*)$": "<rootDir>/apps/users-service/src/$1"
     }
   }
 }

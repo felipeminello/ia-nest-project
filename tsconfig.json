@@ -28,26 +28,17 @@
       "@app/common/*": [
         "libs/common/src/*"
       ],
-      "@apps/nest-modular-monolith": [
-        "apps/nest-modular-monolith/src"
-      ],
-      "@apps/nest-modular-monolith/*": [
-        "apps/nest-modular-monolith/src/*"
-      ],
-      "@apps/products-service": [
+      "@app/products-service": [
         "apps/products-service/src"
       ],
-      "@apps/products-service/*": [
+      "@app/products-service/*": [
         "apps/products-service/src/*"
       ],
-      "@apps/users-service": [
+      "@app/users-service": [
         "apps/users-service/src"
       ],
-      "@apps/users-service/*": [
+      "@app/users-service/*": [
         "apps/users-service/src/*"
-      ],
-      "@libs/*": [
-        "libs/*"
       ]
     }
   }
