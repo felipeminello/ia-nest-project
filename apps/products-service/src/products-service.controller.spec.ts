@@ -40,9 +40,6 @@ describe('ProductsServiceController', () => {
     productsServiceController = app.get<ProductsServiceController>(
       ProductsServiceController,
     );
-    productsServiceService = app.get<ProductsServiceService>(
-      ProductsServiceService,
-    );
   });
 
   describe('create', () => {
