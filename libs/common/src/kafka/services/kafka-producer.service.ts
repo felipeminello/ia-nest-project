@@ -15,11 +15,13 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
   private producer: Producer;
 
   constructor(private readonly configService: ConfigService) {
+    const brokers = this.configService.get<string>(
+      'KAFKA_BROKERS',
+      'localhost:9092',
+    );
     this.kafka = new Kafka({
-      clientId: this.configService.get('KAFKA_CLIENT_ID', 'nest-app'),
-      brokers: this.configService
-        .get('KAFKA_BROKERS', 'localhost:9092')
-        .split(','),
+      clientId: this.configService.get<string>('KAFKA_CLIENT_ID', 'nest-app'),
+      brokers: brokers.split(','),
     });
     this.producer = this.kafka.producer();
   }

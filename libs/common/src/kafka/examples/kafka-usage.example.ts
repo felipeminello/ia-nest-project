@@ -35,7 +35,7 @@ export class KafkaExampleService {
   /**
    * Exemplo 2: Enviar mensagem com key (para garantir ordem)
    */
-  async publishMessageWithKey(userId: string, data: any) {
+  async publishMessageWithKey(userId: string, data: unknown) {
     await this.kafkaProducer.sendMessage({
       topic: 'user.events',
       key: userId, // Mensagens com a mesma key vão para a mesma partição
@@ -46,7 +46,10 @@ export class KafkaExampleService {
   /**
    * Exemplo 3: Enviar mensagem com headers
    */
-  async publishMessageWithHeaders(eventData: any) {
+  async publishMessageWithHeaders(eventData: {
+    id: string;
+    [key: string]: unknown;
+  }) {
     await this.kafkaProducer.sendMessage({
       topic: 'events.topic',
       key: eventData.id,
@@ -62,7 +65,9 @@ export class KafkaExampleService {
   /**
    * Exemplo 4: Enviar múltiplas mensagens em lote (melhor performance)
    */
-  async publishBatchMessages(items: any[]) {
+  async publishBatchMessages(
+    items: Array<{ id: string; [key: string]: unknown }>,
+  ) {
     const messages = items.map((item) => ({
       key: item.id,
       value: item,
@@ -74,7 +79,7 @@ export class KafkaExampleService {
   /**
    * Exemplo 5: Publicar com tratamento de erro
    */
-  async publishWithErrorHandling(data: any) {
+  async publishWithErrorHandling(data: unknown) {
     try {
       await this.kafkaProducer.sendMessage({
         topic: 'important.events',
@@ -99,15 +104,15 @@ export class KafkaExampleService {
   async setupBasicConsumer() {
     await this.kafkaConsumer.subscribe(
       'example.topic',
-      this.handleExampleMessage.bind(this),
+      this.handleExampleMessage.bind(this) as (
+        payload: EachMessagePayload,
+      ) => Promise<void>,
     );
 
     await this.kafkaConsumer.startConsuming();
   }
 
-  private async handleExampleMessage(
-    payload: EachMessagePayload,
-  ): Promise<void> {
+  private handleExampleMessage(payload: EachMessagePayload): void {
     try {
       const data = this.kafkaConsumer.parseMessage(payload);
       this.logger.log(`Received message: ${JSON.stringify(data)}`);
@@ -126,34 +131,40 @@ export class KafkaExampleService {
     // Inscrever em múltiplos tópicos
     await this.kafkaConsumer.subscribe(
       'user.created',
-      this.handleUserCreated.bind(this),
+      this.handleUserCreated.bind(this) as (
+        payload: EachMessagePayload,
+      ) => Promise<void>,
     );
 
     await this.kafkaConsumer.subscribe(
       'user.updated',
-      this.handleUserUpdated.bind(this),
+      this.handleUserUpdated.bind(this) as (
+        payload: EachMessagePayload,
+      ) => Promise<void>,
     );
 
     await this.kafkaConsumer.subscribe(
       'user.deleted',
-      this.handleUserDeleted.bind(this),
+      this.handleUserDeleted.bind(this) as (
+        payload: EachMessagePayload,
+      ) => Promise<void>,
     );
 
     // Iniciar consumo
     await this.kafkaConsumer.startConsuming();
   }
 
-  private async handleUserCreated(payload: EachMessagePayload): Promise<void> {
+  private handleUserCreated(payload: EachMessagePayload): void {
     const user = this.kafkaConsumer.parseMessage(payload);
     this.logger.log(`User created: ${user.id}`);
   }
 
-  private async handleUserUpdated(payload: EachMessagePayload): Promise<void> {
+  private handleUserUpdated(payload: EachMessagePayload): void {
     const user = this.kafkaConsumer.parseMessage(payload);
     this.logger.log(`User updated: ${user.id}`);
   }
 
-  private async handleUserDeleted(payload: EachMessagePayload): Promise<void> {
+  private handleUserDeleted(payload: EachMessagePayload): void {
     const data = this.kafkaConsumer.parseMessage(payload);
     this.logger.log(`User deleted: ${data.id}`);
   }
@@ -172,7 +183,7 @@ export class KafkaExampleService {
         const data = this.kafkaConsumer.parseMessage(payload);
 
         // Processar mensagem
-        await this.processMessage(data);
+        this.processMessage(data);
 
         this.logger.log(
           `Message processed successfully after ${attempts + 1} attempts`,
@@ -180,7 +191,9 @@ export class KafkaExampleService {
         return;
       } catch (error) {
         attempts++;
-        this.logger.warn(`Attempt ${attempts} failed: ${error.message}`);
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        this.logger.warn(`Attempt ${attempts} failed: ${errorMessage}`);
 
         if (attempts >= maxRetries) {
           this.logger.error('Max retries reached, sending to DLQ');
@@ -194,7 +207,7 @@ export class KafkaExampleService {
     }
   }
 
-  private async processMessage(data: any): Promise<void> {
+  private processMessage(data: unknown): void {
     // Sua lógica de processamento aqui
     this.logger.log(`Processing: ${JSON.stringify(data)}`);
   }
@@ -221,9 +234,7 @@ export class KafkaExampleService {
   /**
    * Exemplo 9: Acessar metadados da mensagem
    */
-  private async handleMessageWithMetadata(
-    payload: EachMessagePayload,
-  ): Promise<void> {
+  private handleMessageWithMetadata(payload: EachMessagePayload): void {
     const { topic, partition, message } = payload;
 
     this.logger.log(`
@@ -242,7 +253,7 @@ export class KafkaExampleService {
     this.logger.log(`Source: ${source}, Version: ${version}`);
 
     // Processar mensagem
-    const data = this.kafkaConsumer.parseMessage(payload);
+    this.kafkaConsumer.parseMessage(payload);
     // ...
   }
 }

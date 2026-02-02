@@ -1,6 +1,6 @@
 import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import { KafkaConsumerService } from '@app/common';
-import { EachMessagePayload } from 'kafkajs';
+import type { EachMessagePayload } from 'kafkajs';
 
 @Injectable()
 export class ProductsKafkaConsumer implements OnModuleInit {
@@ -12,26 +12,30 @@ export class ProductsKafkaConsumer implements OnModuleInit {
     // Subscribe to product-related topics
     await this.kafkaConsumerService.subscribe(
       'product.created',
-      this.handleProductCreated.bind(this),
+      this.handleProductCreated.bind(this) as (
+        payload: EachMessagePayload,
+      ) => Promise<void>,
     );
 
     await this.kafkaConsumerService.subscribe(
       'product.updated',
-      this.handleProductUpdated.bind(this),
+      this.handleProductUpdated.bind(this) as (
+        payload: EachMessagePayload,
+      ) => Promise<void>,
     );
 
     await this.kafkaConsumerService.subscribe(
       'product.deleted',
-      this.handleProductDeleted.bind(this),
+      this.handleProductDeleted.bind(this) as (
+        payload: EachMessagePayload,
+      ) => Promise<void>,
     );
 
     // Start consuming messages
     await this.kafkaConsumerService.startConsuming();
   }
 
-  private async handleProductCreated(
-    payload: EachMessagePayload,
-  ): Promise<void> {
+  private handleProductCreated(payload: EachMessagePayload): void {
     try {
       const product = this.kafkaConsumerService.parseMessage(payload);
       this.logger.log(
@@ -45,9 +49,7 @@ export class ProductsKafkaConsumer implements OnModuleInit {
     }
   }
 
-  private async handleProductUpdated(
-    payload: EachMessagePayload,
-  ): Promise<void> {
+  private handleProductUpdated(payload: EachMessagePayload): void {
     try {
       const product = this.kafkaConsumerService.parseMessage(payload);
       this.logger.log(
@@ -60,9 +62,7 @@ export class ProductsKafkaConsumer implements OnModuleInit {
     }
   }
 
-  private async handleProductDeleted(
-    payload: EachMessagePayload,
-  ): Promise<void> {
+  private handleProductDeleted(payload: EachMessagePayload): void {
     try {
       const data = this.kafkaConsumerService.parseMessage(payload);
       this.logger.log(

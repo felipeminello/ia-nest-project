@@ -3,12 +3,10 @@ import { ProductsServiceController } from './products-service.controller';
 import { ProductsServiceService } from './products-service.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
-import { Repository } from 'typeorm';
 import { KafkaProducerService } from '@app/common';
 
 describe('ProductsServiceController', () => {
   let productsServiceController: ProductsServiceController;
-  let productsServiceService: ProductsServiceService;
 
   const mockProductRepository = {
     create: jest.fn(),
